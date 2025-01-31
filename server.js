@@ -1,19 +1,67 @@
 const http = require('http');
 const url = require('url');
+const fs = require('fs');
+const path = require('path');
 const utils = require('./modules/utils');
 const greetingMessage = require('./lang/en/en.json').greeting;
 
 const server = http.createServer((req, res) => {
     const parsedUrl = url.parse(req.url, true);
-    if (parsedUrl.pathname === '/COMP4537/labs/3/getDate/' && req.method === 'GET') {
-        const name = parsedUrl.query.name || 'Guest';
+    const basePath = '/COMP4537/labs/3'; 
+
+    // Part B: Get server time and greet the user
+    if (parsedUrl.pathname === `${basePath}/getDate/` && req.method === 'GET') {
+        const name = parsedUrl.query.name || 'floradeng';
         const currentDate = utils.getDate();
-        const message = `${greetingMessage.replace('Flora Deng', name)} ${currentDate}`;
+        const message = `${greetingMessage.replace('%1', name)} ${currentDate}`;
 
         res.writeHead(200, { 'Content-Type': 'text/html' });
         res.write(`<p style="color: blue;">${message}</p>`);
         res.end();
-    } else {
+    }
+
+    // Part C.1: Write to file
+    else if (parsedUrl.pathname === `${basePath}/writeFile/` && req.method === 'GET') {
+        const text = parsedUrl.query.text || '';
+        if (!text) {
+            res.writeHead(400, { 'Content-Type': 'text/plain' });
+            res.end('Error: No text provided in the query string.');
+            return;
+        }
+
+        const filePath = path.join(__dirname, 'file.txt');
+        fs.appendFile(filePath, `${text}\n`, (err) => {
+            if (err) {
+                res.writeHead(500, { 'Content-Type': 'text/plain' });
+                res.end('Error: Unable to write to file.');
+            } else {
+                res.writeHead(200, { 'Content-Type': 'text/plain' });
+                res.end(`Text "${text}" appended to file.txt`);
+            }
+        });
+    }
+
+    // Part C.2: Read from file
+    else if (parsedUrl.pathname === `${basePath}/readFile/file.txt` && req.method === 'GET') {
+        const filePath = path.join(__dirname, 'file.txt');
+        fs.readFile(filePath, 'utf8', (err, data) => {
+            if (err) {
+                if (err.code === 'ENOENT') {
+                    res.writeHead(404, { 'Content-Type': 'text/plain' });
+                    res.end(`Error: File "file.txt" not found.`);
+                } else {
+                    res.writeHead(500, { 'Content-Type': 'text/plain' });
+                    res.end('Error: Unable to read file.');
+                }
+            } else {
+                res.writeHead(200, { 'Content-Type': 'text/plain' });
+                res.end(data);
+            }
+        });
+    }
+
+    // Handle invalid endpoints
+    else {
         res.writeHead(404, { 'Content-Type': 'text/plain' });
         res.end('404 Not Found');
     }
