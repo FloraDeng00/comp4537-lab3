@@ -1,8 +1,11 @@
 {
-    "name": "comp4537-lab3",
-    "version": "1.0.0",
-    "main": "server.js",
-    "scripts": {
-      "start": "node server.js"
-    }
+  "name": "comp4537-lab3",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "node": "^16.0.0"
   }
+}
