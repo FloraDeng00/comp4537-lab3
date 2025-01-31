@@ -11,9 +11,9 @@ const server = http.createServer((req, res) => {
 
     // Part B: Get server time and greet the user
     if (parsedUrl.pathname === `${basePath}/getDate/` && req.method === 'GET') {
-        const name = parsedUrl.query.name || 'floradeng';
+        const name = parsedUrl.query.name || 'Guest';
         const currentDate = utils.getDate();
-        const message = `${greetingMessage.replace('%1', name)} ${currentDate}`;
+        const message = greetingMessage.replace('%1', name) + ' ' + currentDate;
 
         res.writeHead(200, { 'Content-Type': 'text/html' });
         res.write(`<p style="color: blue;">${message}</p>`);
@@ -43,7 +43,7 @@ const server = http.createServer((req, res) => {
 
     // Part C.2: Read from file (dynamic filename)
     else if (parsedUrl.pathname.startsWith(`${basePath}/readFile/`) && req.method === 'GET') {
-        const fileName = parsedUrl.pathname.split('/').pop();
+        const fileName = parsedUrl.pathname.split('/').pop(); // 获取文件名
         const filePath = path.join(__dirname, fileName);
 
         fs.readFile(filePath, 'utf8', (err, data) => {
