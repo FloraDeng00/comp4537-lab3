@@ -7,7 +7,7 @@ const greetingMessage = require('./lang/en/en.json').greeting;
 
 const server = http.createServer((req, res) => {
     const parsedUrl = url.parse(req.url, true);
-    const basePath = '/COMP4537/labs/3'; 
+    const basePath = '/COMP4537/labs/3';
 
     // Part B: Get server time and greet the user
     if (parsedUrl.pathname === `${basePath}/getDate/` && req.method === 'GET') {
@@ -41,14 +41,16 @@ const server = http.createServer((req, res) => {
         });
     }
 
-    // Part C.2: Read from file
-    else if (parsedUrl.pathname === `${basePath}/readFile/file.txt` && req.method === 'GET') {
-        const filePath = path.join(__dirname, 'file.txt');
+    // Part C.2: Read from file (dynamic filename)
+    else if (parsedUrl.pathname.startsWith(`${basePath}/readFile/`) && req.method === 'GET') {
+        const fileName = parsedUrl.pathname.split('/').pop();
+        const filePath = path.join(__dirname, fileName);
+
         fs.readFile(filePath, 'utf8', (err, data) => {
             if (err) {
                 if (err.code === 'ENOENT') {
                     res.writeHead(404, { 'Content-Type': 'text/plain' });
-                    res.end(`Error: File "file.txt" not found.`);
+                    res.end(`Error: File "${fileName}" not found.`);
                 } else {
                     res.writeHead(500, { 'Content-Type': 'text/plain' });
                     res.end('Error: Unable to read file.');
