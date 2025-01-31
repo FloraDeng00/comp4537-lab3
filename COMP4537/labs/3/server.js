@@ -43,7 +43,7 @@ const server = http.createServer((req, res) => {
 
     // Part C.2: Read from file (dynamic filename)
     else if (parsedUrl.pathname.startsWith(`${basePath}/readFile/`) && req.method === 'GET') {
-        const fileName = parsedUrl.pathname.split('/').pop(); // 获取文件名
+        const fileName = parsedUrl.pathname.split('/').pop();
         const filePath = path.join(__dirname, fileName);
 
         fs.readFile(filePath, 'utf8', (err, data) => {
